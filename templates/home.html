@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+  body { background: linear-gradient(135deg, #1b2440 0%, #3a4a7d 100%) !important; min-height: 100vh; }
+
+  /* square everything */
+  .home-card, .home-card .form-control, .home-card .btn, .home-card .alert {
+    border-radius: 0 !important;
+  }
+
+  .home-card {
+    border: 0;
+    width: min(460px, 92vw);
+    aspect-ratio: 1 / 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .btn-brand { background: #1b2440; color: #fff; border: 0; padding-left: 1.5rem; padding-right: 1.5rem; }
+  .btn-brand:hover, .btn-brand:focus { background: #2b3860; color: #fff; }
+</style>
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+  <div class="card home-card shadow-lg">
+    <div class="card-body p-4 d-flex flex-column justify-content-center">
+
+      <h3 class="h4 fw-semibold text-center mb-4">The Chat Room</h3>
+
+      {% if error %}
+      <div class="alert alert-danger py-2" role="alert">{{ error }}</div>
+      {% endif %}
+
+      <form method="post">
+
+        <div class="form-floating mb-2">
+          <input type="text" class="form-control" id="name" name="name"
+                 placeholder="Pick a name!" value="{{ name or '' }}" autocomplete="off">
+          <label for="name">Name</label>
+          
+        </div>
+
+        <div class="form-floating mb-2">
+          <input type="text" class="form-control" id="code" name="code"
+                 placeholder="Room Code" value="{{ code or '' }}" autocomplete="off">
+          <label for="code">Room Code</label>
+        </div>
+
+        <button type="submit" name="join" value="true" class="btn btn-brand w-100 py-2">Join a Room</button>
+
+        <div class="d-flex align-items-center text-secondary small my-3">
+          <hr class="flex-grow-1 m-0">
+          <span class="px-3">or start a new one</span>
+          <hr class="flex-grow-1 m-0">
+        </div>
+
+        <button type="submit" name="create" value="true" class="btn btn-outline-dark w-100 py-2">Create a Room</button>
+         {% if error %}
+    <ul>
+        <li> {{ error }}</li>
+    </ul>
+    {% endif %}
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

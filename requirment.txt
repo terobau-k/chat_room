@@ -1,0 +1,8 @@
+
+
+Flask
+Flask-SocketIO
+gunicorn
+simple-websocket
+
+

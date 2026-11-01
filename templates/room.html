@@ -1,0 +1,112 @@
+{% extends 'base.html'%}
+{% block content %}
+<style>
+  
+  body { background: #d1d7db !important; }
+
+  .wa-card {
+    width: min(720px, 96vw);
+    height: min(720px, calc(100dvh - 110px));
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: .75rem;
+    background: #fff;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, .25);
+  }
+
+  .wa-head { background:#2b3860; color: #fff; }
+
+  #messages { background: #efeae2; }
+
+  .wa-bubble {
+    max-width: 78%;
+    padding: .35rem .6rem .2rem;
+    border-radius: .6rem;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, .13);
+  }
+  .wa-me    { background: #d9fdd3; border-top-right-radius: 0; }
+  .wa-other { background: #fff;    border-top-left-radius: 0; }
+  .wa-name  { color: #2b3860; font-weight: 600; font-size: .8rem; }
+  .wa-time  { color: #667781; font-size: .68rem; text-align: right; margin-top: 1px; }
+
+  .wa-notice {
+    background: #fff5c4; color: #54656f;
+    font-size: .78rem; padding: .25rem .75rem; border-radius: .5rem;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, .1);
+  }
+
+  .wa-bar { background: #f0f2f5; }
+  .wa-bar .form-control { border-radius: 2rem; border: 0; padding-left: 1rem; }
+  .wa-bar .form-control:focus { box-shadow: none; }
+  .wa-send { background: #008069; color: #fff; border: 0; }
+  .wa-send:hover { background: #006b58; color: #fff; }
+</style>
+
+<div class="d-flex justify-content-center">
+  <div class="wa-card">
+<div class="wa-head d-flex justify-content-between align-items-center px-3 py-2 flex-shrink-0">
+  <div class="lh-sm">
+<div class="message-box card shadow-sm mx-auto my-4 p-3" style="max-width: 720px;">
+    <h2>Chat Room: {{code}}</h2>
+     <div class="messages" id="messages"> </div>
+     <div class="inputs input-group">
+        <button type="button" class="btn btn-outline-secondary" id="emoji-btn">😊</button>
+        <input type="text" rows="3" placeholder="Message" name="message" id="message"/>
+        <button type="button" name="send" id="send-btn" onClick="sendMessage()">Send</button>
+     </div>
+     <div id="emoji-panel" class="d-none border rounded p-2 mt-2"></div>
+</div>
+
+   <script type="text/javascript">
+      var socketio = io();
+   const createMessage = (name, msg) => {
+         const content = `
+         <div class="text d-flex justify-content-between border-bottom py-1">
+            <span>
+               <strong>${name}</strong>: ${msg}
+            </span>
+            <span class="muted text-secondary small">
+               ${new Date().toLocaleString()}
+            </span>
+            </div>
+            `;
+
+            messages.innerHTML += content;
+            
+      };
+
+      socketio.on("message", (data) => {
+         createMessage(data.name, data.message);
+      }); 
+
+      const sendMessage = () => {
+         const message = document.getElementById("message");
+         if (message.value == "") return;
+         socketio.emit("message", { data: message.value });
+         message.value = "";
+      };
+
+      
+      const emojis =["😀", "😂", "😎", "😍", "😢", "😡", "👍", "👎", "🙏", "💪", "❤️", "💩", "😒", "🙄", "😊", "🤡", "🎉", "🎊", "🎄", "🎆", "🎈"];
+      const panel = document.getElementById("emoji-panel")
+      const msgInput = document.getElementById("message")
+      
+      emojis.forEach(e => {
+         const b = document.createElement("button");
+         b.type = "button";
+         b.className = "btn btn-light btn-sm fs-5";
+         b.textContent = e;
+         b.onclick = () => { msgInput.value += e; msgInput.focus(); };
+         panel.appendChild(b);   
+         });
+          
+         document.getElementById("emoji-btn").onclick = () => panel.classList.toggle("d-none");   
+</script>
+{% for msg in messages %}
+<script type="text/javascript">  
+   createMessage("{{ msg.name }}", "{{ msg.message }}");
+</script>
+{% endfor%}
+{% endblock %}
+
